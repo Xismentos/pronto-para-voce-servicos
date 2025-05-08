@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 199 84% 48%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 199 84% 48%;
 
     --radius: 0.5rem;
 
@@ -61,7 +62,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 199 84% 48%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -97,5 +98,40 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(90deg, rgba(14,165,233,0.1) 0%, rgba(34,197,94,0.05) 100%);
+  }
+  
+  .feature-card {
+    @apply p-6 rounded-lg shadow-md border border-gray-100 bg-white transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .service-card {
+    @apply p-5 rounded-lg shadow-sm border border-gray-100 bg-white transition-all duration-300 hover:shadow-md hover:border-brand-blue/30;
+  }
+
+  .input-search {
+    @apply px-4 py-2 w-full rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-blue;
+  }
+
+  .btn-primary {
+    @apply bg-brand-blue text-white px-4 py-2 rounded-md font-medium hover:bg-brand-blue/90 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-brand-blue border border-brand-blue px-4 py-2 rounded-md font-medium hover:bg-brand-blue/5 transition-colors;
+  }
+
+  .btn-green {
+    @apply bg-brand-green text-white px-4 py-2 rounded-md font-medium hover:bg-brand-green/90 transition-colors;
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition-colors;
   }
 }
