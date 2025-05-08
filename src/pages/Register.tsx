@@ -15,6 +15,9 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { Database } from "@/integrations/supabase/types";
+
+type UserRole = Database["public"]["Enums"]["user_role"];
 
 const Register = () => {
   const navigate = useNavigate();
@@ -25,7 +28,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     phone: "",
-    role: "cliente", // default to cliente
+    role: "cliente" as UserRole, // Explicitly typed as UserRole
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +37,10 @@ const Register = () => {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // TypeScript checks that value is compatible with UserRole
+    if (value === "cliente" || value === "prestador") {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,25 +69,16 @@ const Register = () => {
       
       if (error) throw error;
       
-      // Create entry in the users table
-      const { error: insertError } = await supabase.from("users").insert({
-        id: data.user?.id,
-        full_name: formData.fullName,
-        email: formData.email,
-        password_hash: "", // Password is managed by Supabase Auth
-        role: formData.role,
-        phone: formData.phone,
-      });
+      // No need to manually insert into the users table - this will be handled by a database trigger
+      // that fires when a new user signs up through Supabase Auth
       
-      if (insertError) throw insertError;
-      
-      toast.success("Registro realizado com sucesso!");
+      toast.success("Registro realizado com sucesso! Verifique seu email para confirmar sua conta.");
       
       // If user is a service provider, redirect to complete profile
       if (formData.role === "prestador") {
         navigate("/prestador/perfil");
       } else {
-        navigate("/");
+        navigate("/login");
       }
     } catch (error: any) {
       console.error("Registration error:", error);
