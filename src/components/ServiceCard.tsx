@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ServiceCardProps {
   title: string;
@@ -8,22 +9,21 @@ interface ServiceCardProps {
   link: string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({
-  title,
-  icon,
-  description,
-  link,
-}) => {
+const ServiceCard = ({ title, icon, description, link }: ServiceCardProps) => {
   return (
-    <Link to={link} className="service-card block">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="p-2 bg-blue-50 rounded-md text-brand-blue">
-          {icon}
-        </div>
-        <h3 className="text-lg font-semibold">{title}</h3>
-      </div>
-      <p className="text-gray-600 text-sm">{description}</p>
-    </Link>
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-5">
+        <Link to={link} className="block">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-blue-50 rounded-md text-brand-blue">
+              {icon}
+            </div>
+            <h3 className="text-lg font-semibold">{title}</h3>
+          </div>
+          <p className="text-gray-600 text-sm">{description}</p>
+        </Link>
+      </CardContent>
+    </Card>
   );
 };
 
