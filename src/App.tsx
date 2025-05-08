@@ -10,6 +10,8 @@ import ServiceDetail from "./pages/ServiceDetail";
 import ProviderListing from "./pages/ProviderListing";
 import ProviderProfile from "./pages/ProviderProfile";
 import HowItWorks from "./pages/HowItWorks";
+import Login from "./pages/Login";
+import Register from "./pages/Register"; 
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/profissionais" element={<ProviderListing />} />
           <Route path="/prestador/:id" element={<ProviderProfile />} />
           <Route path="/como-funciona" element={<HowItWorks />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Register />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
