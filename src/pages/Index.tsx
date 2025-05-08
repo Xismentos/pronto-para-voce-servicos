@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, ArrowRight, Check, Star, Shield } from "lucide-react";
+import { Search, MapPin, ArrowRight, Check, Star, Shield, User, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
