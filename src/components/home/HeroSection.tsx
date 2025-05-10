@@ -1,12 +1,33 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
+
+  const handleSearch = () => {
+    const searchParams = new URLSearchParams();
+    
+    if (searchQuery) {
+      searchParams.append("q", searchQuery);
+    }
+    
+    if (location) {
+      searchParams.append("loc", location);
+    }
+    
+    navigate(`/profissionais?${searchParams.toString()}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <section className="hero-gradient py-16 md:py-24">
@@ -29,6 +50,7 @@ const HeroSection = () => {
                   className="input-search pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <div className="flex-1 relative">
@@ -39,9 +61,10 @@ const HeroSection = () => {
                   className="input-search pl-10"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
-              <Button className="btn-green whitespace-nowrap" size="lg">
+              <Button className="btn-green whitespace-nowrap" size="lg" onClick={handleSearch}>
                 Buscar
               </Button>
             </div>
@@ -50,13 +73,13 @@ const HeroSection = () => {
           <div className="mt-6 text-sm text-gray-500">
             Serviços populares:
             <div className="flex flex-wrap justify-center gap-2 mt-2">
-              <Link to="/servicos/eletricistas" className="text-brand-blue hover:underline">Eletricista</Link>
+              <Link to="/profissionais?q=eletricista" className="text-brand-blue hover:underline">Eletricista</Link>
               <span className="text-gray-400">•</span>
-              <Link to="/servicos/encanadores" className="text-brand-blue hover:underline">Encanador</Link>
+              <Link to="/profissionais?q=encanador" className="text-brand-blue hover:underline">Encanador</Link>
               <span className="text-gray-400">•</span>
-              <Link to="/servicos/diaristas" className="text-brand-blue hover:underline">Diarista</Link>
+              <Link to="/profissionais?q=diarista" className="text-brand-blue hover:underline">Diarista</Link>
               <span className="text-gray-400">•</span>
-              <Link to="/servicos/pintores" className="text-brand-blue hover:underline">Pintor</Link>
+              <Link to="/profissionais?q=pintor" className="text-brand-blue hover:underline">Pintor</Link>
             </div>
           </div>
         </div>

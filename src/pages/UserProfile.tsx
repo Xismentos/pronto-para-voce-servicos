@@ -19,8 +19,22 @@ import {
 import { Database } from "@/integrations/supabase/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
+
+const serviceTypeOptions = [
+  { value: "eletricista", label: "Eletricista" },
+  { value: "diarista", label: "Diarista" },
+  { value: "encanador", label: "Encanador" },
+  { value: "ar_condicionado", label: "Ar Condicionado" },
+  { value: "pintor", label: "Pintor" },
+  { value: "marceneiro", label: "Marceneiro" },
+  { value: "chaveiro", label: "Chaveiro" },
+  { value: "jardineiro", label: "Jardineiro" },
+  { value: "eletrodomesticos", label: "Técnicos de Eletrodomésticos" },
+  { value: "piscineiro", label: "Piscineiro" }
+];
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -28,6 +42,8 @@ const UserProfile = () => {
   const [user, setUser] = useState<any>(null);
   const [userDetails, setUserDetails] = useState<any>(null);
   const [providerDetails, setProviderDetails] = useState<any>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -39,6 +55,7 @@ const UserProfile = () => {
     address: "",
     serviceType: "",
     description: "",
+    averagePrice: "",
   });
 
   useEffect(() => {
@@ -91,6 +108,7 @@ const UserProfile = () => {
           
           if (providerData) {
             setProviderDetails(providerData);
+            setAvatarUrl(providerData.profile_picture_url);
             setFormData(prevData => ({
               ...prevData,
               city: providerData.city || "",
@@ -99,6 +117,7 @@ const UserProfile = () => {
               address: providerData.address || "",
               serviceType: providerData.service_type || "",
               description: providerData.description || "",
+              averagePrice: providerData.average_price || "",
             }));
           }
         }
@@ -122,6 +141,44 @@ const UserProfile = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+      
+      // Create preview URL
+      const objectUrl = URL.createObjectURL(file);
+      setAvatarUrl(objectUrl);
+    }
+  };
+
+  const uploadAvatar = async (userId: string): Promise<string | null> => {
+    if (!avatarFile) return avatarUrl;
+    
+    try {
+      // Create a unique file path
+      const filePath = `profile_pictures/${userId}/${Date.now()}-${avatarFile.name}`;
+      
+      // Upload the file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, avatarFile);
+      
+      if (uploadError) throw uploadError;
+      
+      // Get the public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+      
+      return data.publicUrl;
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Erro ao fazer upload da foto de perfil");
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -133,6 +190,12 @@ const UserProfile = () => {
     setIsLoading(true);
     
     try {
+      // Upload avatar if changed
+      let profilePictureUrl = avatarUrl;
+      if (avatarFile) {
+        profilePictureUrl = await uploadAvatar(user.id);
+      }
+      
       // Update user details
       const { error: userUpdateError } = await supabase
         .from("users")
@@ -158,6 +221,8 @@ const UserProfile = () => {
               address: formData.address,
               service_type: formData.serviceType,
               description: formData.description,
+              profile_picture_url: profilePictureUrl,
+              average_price: formData.averagePrice,
             })
             .eq("user_id", user.id);
           
@@ -174,6 +239,8 @@ const UserProfile = () => {
               address: formData.address,
               service_type: formData.serviceType,
               description: formData.description,
+              profile_picture_url: profilePictureUrl,
+              average_price: formData.averagePrice,
             });
           
           if (providerInsertError) throw providerInsertError;
@@ -247,6 +314,36 @@ const UserProfile = () => {
               </CardHeader>
               <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-4">
+                  <div className="flex justify-center mb-6">
+                    <div className="relative">
+                      <Avatar className="w-24 h-24 border-2 border-gray-200">
+                        {avatarUrl ? (
+                          <AvatarImage src={avatarUrl} alt="Foto de perfil" />
+                        ) : (
+                          <AvatarFallback>{formData.fullName?.charAt(0) || "U"}</AvatarFallback>
+                        )}
+                      </Avatar>
+                      <label 
+                        htmlFor="avatar-upload" 
+                        className="absolute bottom-0 right-0 bg-brand-blue text-white p-1 rounded-full cursor-pointer"
+                      >
+                        <span className="sr-only">Atualizar foto</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 16v4h4"/>
+                          <path d="M20 8V4h-4"/>
+                          <path d="m2 12 6-6a2 2 0 0 1 2.82.01C11.47 6.65 13.8 9 14.5 9.8c.4.5.8.4 1.1.1l.9-.9a2 2 0 0 1 2.82.01L20 12"/>
+                        </svg>
+                      </label>
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Nome Completo</Label>
                     <Input
@@ -271,7 +368,7 @@ const UserProfile = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
+                    <Label htmlFor="phone">Telefone/WhatsApp</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -301,22 +398,19 @@ const UserProfile = () => {
                 <form onSubmit={handleSubmit}>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="serviceType">Tipo de Serviço</Label>
+                      <Label htmlFor="serviceType">Área de Atuação</Label>
                       <Select 
                         name="serviceType" 
                         value={formData.serviceType} 
                         onValueChange={(value) => handleSelectChange("serviceType", value)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo de serviço" />
+                          <SelectValue placeholder="Selecione sua área de atuação" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="limpeza">Limpeza</SelectItem>
-                          <SelectItem value="encanador">Encanador</SelectItem>
-                          <SelectItem value="eletricista">Eletricista</SelectItem>
-                          <SelectItem value="pintor">Pintor</SelectItem>
-                          <SelectItem value="jardineiro">Jardineiro</SelectItem>
-                          <SelectItem value="outro">Outro</SelectItem>
+                          {serviceTypeOptions.map(option => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -330,6 +424,17 @@ const UserProfile = () => {
                         onChange={handleChange}
                         placeholder="Descreva sua experiência e serviços oferecidos"
                         className="min-h-[100px]"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="averagePrice">Média de valor a ser cobrado</Label>
+                      <Input
+                        id="averagePrice"
+                        name="averagePrice"
+                        value={formData.averagePrice}
+                        onChange={handleChange}
+                        placeholder="R$ (média) - Para mais informações chamar no privado"
                       />
                     </div>
                     
