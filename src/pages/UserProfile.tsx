@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -157,7 +156,7 @@ const UserProfile = () => {
     
     try {
       // Create a unique file path
-      const filePath = `profile_pictures/${userId}/${Date.now()}-${avatarFile.name}`;
+      const filePath = `${userId}/${Date.now()}-${avatarFile.name}`;
       
       // Upload the file to Supabase Storage
       const { error: uploadError } = await supabase.storage

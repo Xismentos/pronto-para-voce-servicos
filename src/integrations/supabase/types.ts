@@ -120,6 +120,7 @@ export type Database = {
           address: string | null
           available_days: Json | null
           available_hours: Json | null
+          average_price: string | null
           city: string | null
           cpf_cnpj: string | null
           created_at: string
@@ -127,6 +128,7 @@ export type Database = {
           id: string
           profile_picture_url: string | null
           rating: number | null
+          review_count: number | null
           service_type: string
           state: string | null
           updated_at: string
@@ -138,6 +140,7 @@ export type Database = {
           address?: string | null
           available_days?: Json | null
           available_hours?: Json | null
+          average_price?: string | null
           city?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -145,6 +148,7 @@ export type Database = {
           id?: string
           profile_picture_url?: string | null
           rating?: number | null
+          review_count?: number | null
           service_type: string
           state?: string | null
           updated_at?: string
@@ -156,6 +160,7 @@ export type Database = {
           address?: string | null
           available_days?: Json | null
           available_hours?: Json | null
+          average_price?: string | null
           city?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -163,6 +168,7 @@ export type Database = {
           id?: string
           profile_picture_url?: string | null
           rating?: number | null
+          review_count?: number | null
           service_type?: string
           state?: string | null
           updated_at?: string
