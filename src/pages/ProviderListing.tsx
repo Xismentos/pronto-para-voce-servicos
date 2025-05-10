@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,20 +9,7 @@ import ProviderCard from "@/components/ProviderCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const serviceTypeOptions = [
-  { value: "", label: "Todos os serviços" },
-  { value: "eletricista", label: "Eletricista" },
-  { value: "diarista", label: "Diarista" },
-  { value: "encanador", label: "Encanador" },
-  { value: "ar_condicionado", label: "Ar Condicionado" },
-  { value: "pintor", label: "Pintor" },
-  { value: "marceneiro", label: "Marceneiro" },
-  { value: "chaveiro", label: "Chaveiro" },
-  { value: "jardineiro", label: "Jardineiro" },
-  { value: "eletrodomesticos", label: "Técnicos de Eletrodomésticos" },
-  { value: "piscineiro", label: "Piscineiro" }
-];
+import { serviceTypeOptions } from "@/utils/profileHelpers";
 
 const ProviderListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,7 +18,7 @@ const ProviderListing = () => {
   
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [location, setLocation] = useState(initialLocation);
-  const [serviceType, setServiceType] = useState(initialQuery);
+  const [serviceType, setServiceType] = useState("");
   const [sortBy, setSortBy] = useState("rating_desc");
   
   const [providers, setProviders] = useState<any[]>([]);
@@ -173,6 +160,7 @@ const ProviderListing = () => {
                     <SelectValue placeholder="Filtrar por serviço" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">Todos os serviços</SelectItem>
                     {serviceTypeOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
